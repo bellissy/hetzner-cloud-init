@@ -43,6 +43,17 @@ EOF
 
 sysctl -p /etc/sysctl.d/99-custom.conf
 
+
+cat <<EOF >> /etc/docker/daemon.json
+{
+    "insecure-registries": ["10.0.0.2:5000"]
+}
+EOF
+
+systemctl daemon-reload
+systemctl restart docker
+
+
 wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 chmod +x jq-linux64
 mv jq-linux64 /usr/local/bin/jq
