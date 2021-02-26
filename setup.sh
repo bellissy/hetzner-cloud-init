@@ -43,7 +43,7 @@ EOF
 
 sysctl -p /etc/sysctl.d/99-custom.conf
 
-
+mkdir -p /etc/docker
 cat <<EOF >> /etc/docker/daemon.json
 {
     "insecure-registries": ["10.0.0.2:5000"]
