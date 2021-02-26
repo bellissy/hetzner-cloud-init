@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+INPUT=$@
+docker run --rm --net=host -v /root/kubeconfig_admin.yaml:/root/.kube/config --entrypoint bash rancher/rancher-agent:v2.4.5 -c "kubectl $INPUT"
