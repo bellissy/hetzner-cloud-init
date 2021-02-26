@@ -50,10 +50,6 @@ cat <<EOF >> /etc/docker/daemon.json
 }
 EOF
 
-systemctl daemon-reload
-systemctl restart docker
-
-
 wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 chmod +x jq-linux64
 mv jq-linux64 /usr/local/bin/jq
