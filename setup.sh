@@ -54,6 +54,13 @@ wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 chmod +x jq-linux64
 mv jq-linux64 /usr/local/bin/jq
 
+curl -o /usr/local/bin/rke-node-kubeconfig.sh https://raw.githubusercontent.com/bellissy/hetzner-cloud-init/master/rke-node-kubeconfig.sh
+
+chmod +x /usr/local/bin/rke-node-kubeconfig.sh
+
+curl -o /usr/local/bin/kubectl https://raw.githubusercontent.com/bellissy/hetzner-cloud-init/master/kubectl
+
+chmod +x /usr/local/bin/kubectl
 
 curl -o /usr/local/bin/update-config.sh https://raw.githubusercontent.com/bellissy/hetzner-cloud-init/master/update-config.sh
 
