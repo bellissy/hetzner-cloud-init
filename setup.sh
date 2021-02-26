@@ -33,6 +33,16 @@ sed -i 's/[#]*PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/s
 
 systemctl restart sshd
 
+cat <<EOF >> /etc/sysctl.d/99-custom.conf
+vm.overcommit_memory=1
+vm.panic_on_oom=0
+kernel.panic=10
+kernel.panic_on_oops=1
+kernel.keys.root_maxbytes=25000000
+EOF
+
+sysctl -p /etc/sysctl.d/99-custom.conf
+
 wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 chmod +x jq-linux64
 mv jq-linux64 /usr/local/bin/jq
