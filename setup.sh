@@ -48,7 +48,7 @@ chmod +x jq-linux64
 mv jq-linux64 /usr/local/bin/jq
 
 
-curl -o /usr/local/bin/update-config.sh https://raw.githubusercontent.com/vitobotta/hetzner-cloud-init/master/update-config.sh
+curl -o /usr/local/bin/update-config.sh https://raw.githubusercontent.com/bellissy/hetzner-cloud-init/master/update-config.sh
 
 chmod +x /usr/local/bin/update-config.sh
 
