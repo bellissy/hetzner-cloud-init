@@ -18,7 +18,7 @@ else
   K8S_SSLDIR=/etc/kubernetes/ssl
 fi
 
-docker run --rm --net=host -v $K8S_SSLDIR:/etc/kubernetes/ssl:ro --entrypoint bash $RANCHER_IMAGE -c 'kubectl --kubeconfig /etc/kubernetes/ssl/kubecfg-kube-node.yaml get configmap -n kube-system full-cluster-state -o json | jq -r .data.\"full-cluster-state\" | jq -r .currentState.certificatesBundle.\"kube-admin\".config | sed -e "/^[[:space:]]*server:/ s_:.*_: \"https://127.0.0.1:6443\"_"' > kubeconfig_admin.yaml
+docker run --rm --net=host -v $K8S_SSLDIR:/etc/kubernetes/ssl:ro --entrypoint bash $RANCHER_IMAGE -c 'kubectl --kubeconfig /etc/kubernetes/ssl/kubecfg-kube-node.yaml get configmap -n kube-system full-cluster-state -o json | jq -r .data.\"full-cluster-state\" | jq -r .currentState.certificatesBundle.\"kube-admin\".config | sed -e "/^[[:space:]]*server:/ s_:.*_: \"https://127.0.0.1:6443\"_"' > /root/kubeconfig_admin.yaml
 
 if [ -s kubeconfig_admin.yaml ]; then
   if [ -z $CONTROLPLANE ]; then
