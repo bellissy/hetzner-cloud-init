@@ -3,6 +3,9 @@ FILE=/root/kubeconfig_admin.yaml
 if [ ! -f "$FILE" ]; then
 	/usr/local/bin/rke-node-kubeconfig.sh
 fi
-
+if [ ! -f "$FILE" ]; then
+        echo "No config"
+        exit
+fi
 INPUT=$@
 docker run --rm --net=host -v /root/kubeconfig_admin.yaml:/root/.kube/config --entrypoint bash rancher/rancher-agent:v2.4.5 -c "kubectl $INPUT"
