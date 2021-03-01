@@ -50,6 +50,7 @@ AUTH_PW=$AUTH_PASSWORD
 REPOS=\$(curl -s -u \$AUTH_USER:\$AUTH_PW https://\$REGISTRY_URL/v2/_catalog | jq -r .repositories[])
 
 for REPO in \$REPOS; do
+    echo \$AUTH_PW | docker login -u \$AUTH_USER --password-stdin \$REGISTRY_URL
     docker pull --all-tags \$REGISTRY_URL/\$REPO
 done
 EOF
