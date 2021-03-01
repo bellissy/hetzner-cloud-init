@@ -15,6 +15,21 @@ case $key in
     shift
     shift
   ;;
+  --registry)
+    REGISTRY_URL="$2"
+    shift
+    shift
+  ;;
+  --auth-user)
+    AUTH_USER="$2"
+    shift
+    shift
+  ;;
+  --auth-password)
+    AUTH_PASSWORD="$2"
+    shift
+    shift
+  ;;
   --floating-ips)
     FLOATING_IPS="--floating-ips"
     shift
@@ -24,6 +39,37 @@ case $key in
   ;;
 esac
 done
+
+if [[ ! -z $REGISTRY_URL && ! -z $AUTH_USER && ! -z $AUTH_PASSWORD ]]; then
+cat <<EOF > /usr/local/bin/find_latest_shas.sh
+#!/usr/bin/env bash
+
+REGISTRY_URL=$REGISTRY_URL
+AUTH_USER=$AUTH_USER
+AUTH_PW=$AUTH_PASSWORD
+REPOS=\$(curl -s -u \$AUTH_USER:\$AUTH_PW https://\$REGISTRY_URL/v2/_catalog | jq -r .repositories[])
+
+for REPO in \$REPOS; do
+
+    LATEST_SHA=\$(curl -s -u \$AUTH_USER:\$AUTH_PW https://\$REGISTRY_URL/v2/\$REPO/manifests/latest -H 'Accept: application/vnd.docker.distribution.manifest.v2+json' | jq .config.digest)
+
+    TAGS=\$(curl -s -u \$AUTH_USER:\$AUTH_PW  https://\$REGISTRY_URL/v2/\$REPO/tags/list | jq -r ' .tags | map(select(. != "latest")) | .[]')
+
+    for TAG in \$TAGS ; do
+        SHA=\$(curl -s -u \$AUTH_USER:\$AUTH_PW https://\$REGISTRY_URL/v2/\$REPO/manifests/\$TAG -H 'Accept: application/vnd.docker.distribution.manifest.v2+json' | jq .config.digest)
+        if [ "\$SHA" == "\$LATEST_SHA" ]; then
+            echo "kubectl --insecure-skip-tls-verify set image deployments/\$REPO \$REPO=\$REGISTRY_URL/\$REPO:\$TAG"
+            kubectl --insecure-skip-tls-verify set image deployments/\$REPO \$REPO=\$REGISTRY_URL/\$REPO:\$TAG
+        fi
+    done
+done
+EOF
+
+chmod +x /usr/local/bin/find_latest_shas.sh
+cat <<EOF >> /etc/crontab
+* * * * * root /usr/local/bin/find_latest_shas.sh
+EOF
+fi
 
 FLOATING_IPS=${FLOATING_IPS:-""}
 
@@ -43,12 +89,7 @@ EOF
 
 sysctl -p /etc/sysctl.d/99-custom.conf
 
-mkdir -p /etc/docker
-cat <<EOF >> /etc/docker/daemon.json
-{
-    "insecure-registries": ["10.0.0.2:5000"]
-}
-EOF
+
 
 wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 chmod +x jq-linux64
@@ -88,5 +129,8 @@ cat <<EOF >> /etc/crontab
 * * * * * root /usr/local/bin/update-config.sh --hcloud-token ${TOKEN} --whitelisted-ips ${WHITELIST_S} ${FLOATING_IPS}
 EOF
 
-/usr/local/bin/update-config.sh --hcloud-token ${TOKEN} --whitelisted-ips ${WHITELIST_S} ${FLOATING_IPS}
+cat <<EOF >> /etc/crontab
+30 * * * * root docker system prune -a -f
+EOF
 
+/usr/local/bin/update-config.sh --hcloud-token ${TOKEN} --whitelisted-ips ${WHITELIST_S} ${FLOATING_IPS}
