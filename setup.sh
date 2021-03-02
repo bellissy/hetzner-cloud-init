@@ -15,21 +15,6 @@ case $key in
     shift
     shift
   ;;
-  --registry)
-    REGISTRY_URL="$2"
-    shift
-    shift
-  ;;
-  --auth-user)
-    AUTH_USER="$2"
-    shift
-    shift
-  ;;
-  --auth-password)
-    AUTH_PASSWORD="$2"
-    shift
-    shift
-  ;;
   --floating-ips)
     FLOATING_IPS="--floating-ips"
     shift
@@ -40,26 +25,7 @@ case $key in
 esac
 done
 
-if [[ ! -z $REGISTRY_URL && ! -z $AUTH_USER && ! -z $AUTH_PASSWORD ]]; then
-cat <<EOF > /usr/local/bin/find_latest_shas.sh
-#!/usr/bin/env bash
 
-REGISTRY_URL=$REGISTRY_URL
-AUTH_USER=$AUTH_USER
-AUTH_PW=$AUTH_PASSWORD
-REPOS=\$(curl -s -u \$AUTH_USER:\$AUTH_PW https://\$REGISTRY_URL/v2/_catalog | jq -r .repositories[])
-
-for REPO in \$REPOS; do
-    echo \$AUTH_PW | docker login -u \$AUTH_USER --password-stdin \$REGISTRY_URL
-    docker pull --all-tags \$REGISTRY_URL/\$REPO
-done
-EOF
-
-chmod +x /usr/local/bin/find_latest_shas.sh
-cat <<EOF >> /etc/crontab
-* * * * * root /usr/local/bin/find_latest_shas.sh
-EOF
-fi
 
 FLOATING_IPS=${FLOATING_IPS:-""}
 
