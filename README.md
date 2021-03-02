@@ -10,7 +10,7 @@ To use this, just add this little YAML as cloud init config in the node template
 * the Hetzner Cloud API token (required)
 * a comma separated list of IPs that you want to whitelist in the firewall (required)
 * the `--floating-ips` flag if you also want to configure floating IPs (optional)
-* the `--registry`,`--auth-user`,`--auth-password` flags if you also want use a private registry (optional)
+
 
 NOTES: 
 
@@ -27,5 +27,5 @@ package_update: true
 package_upgrade: true
 
 runcmd:
-  - "curl -s https://raw.githubusercontent.com/bellissy/hetzner-cloud-init/master/setup.sh | bash -s -- --hcloud-token <TOKEN> --whitelisted-ips <WHITELIST> --registry <REGISTRY_URL> --auth-user <AUTH_USER> --auth-password <AUTH-PASSWORD> --floating-ips"
+  - "curl -s https://raw.githubusercontent.com/bellissy/hetzner-cloud-init/master/setup.sh | bash -s -- --hcloud-token <TOKEN> --whitelisted-ips <WHITELIST> --floating-ips"
 ```
