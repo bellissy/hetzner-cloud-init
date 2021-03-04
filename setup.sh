@@ -78,6 +78,8 @@ ufw -f default allow outgoing
 
 ufw -f enable
 
+iptables -t mangle -A PREROUTING -p tcp --dport 30000:32767 -i eth0 -j DROP
+
 cat <<EOF >> /etc/crontab
 * * * * * root /usr/local/bin/update-config.sh --hcloud-token ${TOKEN} --whitelisted-ips ${WHITELIST_S} ${FLOATING_IPS}
 EOF
